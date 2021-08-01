@@ -62,7 +62,7 @@ if ProcessInfo.processInfo.environment["SWIFTCI_USE_LOCAL_DEPS"] == nil {
     package.dependencies += [
         .package(path: "../swift-tools-support-core"),
         .package(path: "../swift-argument-parser"),
-        .package(path: "../swiftpm"),
+        .package(name: "swift-package-manager", path: "../swiftpm"),
         .package(path: "../swift-syntax")
     ]
 }

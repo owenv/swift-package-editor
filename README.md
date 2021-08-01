@@ -18,4 +18,4 @@ Because `swift-package-editor` depends on `swift-syntax` to edit `Package.swift`
 
 ## Installing
 
-TBD
+Run `./Utilities/build-script-helper.py install -h` for details.
