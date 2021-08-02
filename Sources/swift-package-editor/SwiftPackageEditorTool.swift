@@ -11,14 +11,9 @@
 import ArgumentParser
 import Basics
 import TSCBasic
-import SPMBuildCore
-import Build
 import PackageModel
-import PackageLoading
 import PackageGraph
 import SourceControl
-import TSCUtility
-import Xcodeproj
 import Workspace
 import Foundation
 import PackageSyntax
