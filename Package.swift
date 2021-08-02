@@ -42,7 +42,11 @@ let package = Package(
             .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
             .product(name: "SwiftPM-auto", package: "swift-package-manager"),
             .product(name: "PackageDescription", package: "swift-package-manager")
-        ])
+        ]),
+        .testTarget(name: "IntegrationTests", dependencies: [
+            "swift-package-editor",
+            .product(name: "TSCTestSupport", package: "swift-tools-support-core")
+        ], resources: [.copy("Fixtures/")])
     ]
 )
 
