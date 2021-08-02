@@ -1,6 +1,6 @@
 # swift-package-editor
 
-Mechanical editing support for `Package.swift` manifests.
+Mechanical editing support for `Package.swift` manifests. Implements Swift Evolution proposal [SE-301](https://github.com/apple/swift-evolution/blob/main/proposals/0301-package-editing-commands.md)
 
 ## Usage
 
