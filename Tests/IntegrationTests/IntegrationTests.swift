@@ -23,9 +23,16 @@ enum SwiftPackageEditor: TSCTestSupport.Product {
 
 final class IntegrationTests: XCTestCase {
 
+    func execute(_ args: [String]) throws {
+        let env = ["SWIFTPM_MODULECACHE_OVERRIDE": ProcessInfo.processInfo.environment["SWIFTPM_MODULECACHE_OVERRIDE"] ??
+                   SwiftPackageEditor.executable.path.parentDirectory.appending(component: ".integration-test-module-cache")
+                    .pathString]
+        try SwiftPackageEditor.executable.execute(args, env: env)
+    }
+
     func assertFailure(args: String..., stderr: String) {
         do {
-            try SwiftPackageEditor.executable.execute(args)
+            try execute(args)
             XCTFail()
         } catch SwiftPMProductError.executionFailure(_, _, let stderrOutput) {
             XCTAssertEqual(stderrOutput, stderr)
@@ -68,7 +75,7 @@ final class IntegrationTests: XCTestCase {
         try withFixture(named: "Empty") { emptyPath in
             try withFixture(named: "OneProduct") { oneProductPath in
                 try localFileSystem.changeCurrentWorkingDirectory(to: emptyPath)
-                try SwiftPackageEditor.executable.execute(["add-dependency", oneProductPath.pathString])
+                try execute(["add-dependency", oneProductPath.pathString])
                 let newManifest = try localFileSystem.readFileContents(emptyPath.appending(component: "Package.swift")).validDescription
                 XCTAssertEqual(newManifest, """
                 // swift-tools-version:5.3
@@ -91,11 +98,11 @@ final class IntegrationTests: XCTestCase {
         try withFixture(named: "Empty") { emptyPath in
             try withFixture(named: "OneProduct") { oneProductPath in
                 try localFileSystem.changeCurrentWorkingDirectory(to: emptyPath)
-                try SwiftPackageEditor.executable.execute(["add-dependency", oneProductPath.pathString])
-                try SwiftPackageEditor.executable.execute(["add-target", "MyLibrary", "--dependencies", "Library"])
-                try SwiftPackageEditor.executable.execute(["add-target", "MyExecutable", "--type", "executable",
+                try execute(["add-dependency", oneProductPath.pathString])
+                try execute(["add-target", "MyLibrary", "--dependencies", "Library"])
+                try execute(["add-target", "MyExecutable", "--type", "executable",
                                                            "--dependencies", "MyLibrary"])
-                try SwiftPackageEditor.executable.execute(["add-target", "--type", "test", "IntegrationTests",
+                try execute(["add-target", "--type", "test", "IntegrationTests",
                                                            "--dependencies", "MyLibrary"])
                 let newManifest = try localFileSystem.readFileContents(emptyPath.appending(component: "Package.swift")).validDescription
                 XCTAssertEqual(newManifest, """
@@ -148,17 +155,17 @@ final class IntegrationTests: XCTestCase {
     func testAddProductEndToEnd() throws {
         try withFixture(named: "Empty") { emptyPath in
             try localFileSystem.changeCurrentWorkingDirectory(to: emptyPath)
-            try SwiftPackageEditor.executable.execute(["add-target", "MyLibrary", "--no-test-target"])
-            try SwiftPackageEditor.executable.execute(["add-target", "MyLibrary2", "--no-test-target"])
-            try SwiftPackageEditor.executable.execute(["add-product", "LibraryProduct",
-                                                       "--targets", "MyLibrary", "MyLibrary2"])
-            try SwiftPackageEditor.executable.execute(["add-product", "DynamicLibraryProduct",
-                                                       "--type", "dynamic-library",
-                                                       "--targets", "MyLibrary"])
-            try SwiftPackageEditor.executable.execute(["add-product", "StaticLibraryProduct",
-                                                       "--type", "static-library",
-                                                       "--targets", "MyLibrary"])
-            try SwiftPackageEditor.executable.execute(["add-product", "ExecutableProduct",
+            try execute(["add-target", "MyLibrary", "--no-test-target"])
+            try execute(["add-target", "MyLibrary2", "--no-test-target"])
+            try execute(["add-product", "LibraryProduct",
+                         "--targets", "MyLibrary", "MyLibrary2"])
+            try execute(["add-product", "DynamicLibraryProduct",
+                         "--type", "dynamic-library",
+                         "--targets", "MyLibrary"])
+            try execute(["add-product", "StaticLibraryProduct",
+                         "--type", "static-library",
+                         "--targets", "MyLibrary"])
+            try execute(["add-product", "ExecutableProduct",
                                                        "--type", "executable",
                                                        "--targets", "MyLibrary2"])
             let newManifest = try localFileSystem.readFileContents(emptyPath.appending(component: "Package.swift")).validDescription
